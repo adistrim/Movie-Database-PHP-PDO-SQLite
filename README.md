@@ -1,5 +1,5 @@
 # Movie Database
-This project uses PHP and PDO to connect to an SQLite database of movies. The purpose of this project is to allow users to search for information about movie stars or directors.
+This project uses PHP and SQLite database of movies. The purpose of this project is to allow users to search for information about movie stars.
 
 ## Requirements
 - PHP 7 or higher
