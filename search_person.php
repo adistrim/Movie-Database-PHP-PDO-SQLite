@@ -15,6 +15,8 @@ if (isset($_GET['input'])) {
     exit;
 }
 
+
+
 // Check if input is a number (ID)
 if (is_numeric($input)) {
     // Prepare SQL statement
@@ -23,7 +25,7 @@ if (is_numeric($input)) {
 } else { // Assume input is a name
     // Prepare SQL statement
     $stmt = $db->prepare('SELECT * FROM people WHERE name LIKE :name');
-    $stmt->bindParam(':name', '%' . $input . '%', PDO::PARAM_STR);
+    $stmt->bindParam(':name', $input, PDO::PARAM_STR);
 }
 
 // Execute SQL statement and retrieve results
@@ -44,14 +46,13 @@ if ($num_results == 0) { // No results found
     foreach ($results as $result) {
         echo '<h2>' . $result['name'] . '</h2>';
         echo '<p>ID: ' . $result['id'] . '</p>';
-        echo '<p>Birth Year: ' . $result['birth_year'] . '</p>';
-        echo '<p>Gender: ' . $result['gender'] . '</p>';
+        echo '<p>Birth Year: ' . $result['birth'] . '</p>';
     }
 } else { // Multiple results found
     echo '<p>Multiple matches found:</p>';
     echo '<ul>';
     foreach ($results as $result) {
-        echo '<li>ID: ' . $result['id'] . ', Name: ' . $result['name'] . ', Birth Year: ' . $result['birth_year'] . '</li>';
+        echo '<li>ID: ' . $result['id'] . ', Name: ' . $result['name'] . ', Birth Year: ' . $result['birth'] . '</li>';
     }
     echo '</ul>';
     exit;
