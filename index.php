@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Search Person</title>
+	<meta charset="UTF-8">
+	<title>Movies Database</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
+
 <body>
-	<h1>Search Person</h1>
-	<form action="search_person.php" method="GET">
-		<label for="input">Enter ID or Name:</label>
-		<input type="text" id="input" name="input">
-		<input type="submit" value="Search">
-	</form>
+	<div class="container">
+		<h1 class="headline">Movies Database</h1>
+		<form action="search_person.php" method="get">
+			<label for="input">Search for a Person:</label>
+			<input type="text" id="input" name="input" placeholder="Enter an ID or Name">
+			<button class="button" type="submit">Search</button>
+		</form>
+	</div>
 </body>
+
 </html>
