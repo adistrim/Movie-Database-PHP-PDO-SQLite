@@ -1,4 +1,4 @@
-# Movie Database
+# Movie-Database-PHP-SQLite
 This project uses PHP and SQLite database of movies. The purpose of this project is to allow users to search for information about movie stars.
 
 ## Requirements
