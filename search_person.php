@@ -2,6 +2,17 @@
 <html>
 
 <head>
+    <style>
+        .result-box {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+            width: 40%;
+        }
+    </style>
     <title>Movie Database</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -52,12 +63,17 @@
         exit;
     } elseif ($num_results == 1) { // One result found
         foreach ($results as $result) {
-            echo '<h2>' . $result['name'] . '</h2>';
-            echo '<p>ID: ' . $result['id'] . '</p>';
-            echo '<p>Birth Year: ' . $result['birth'] . '</p>';
+            echo '<div class="result-box">';
+            echo '<h2>Name:' . $result['name'] . '</h2>';
+            echo '<h3>ID: ' . $result['id'] . '</p>';
+            echo '<h3>Birth Year: ' . $result['birth'] . '</p>';
+            echo '</div>';
         }
     } else { // Multiple results found
-        echo '<table>';
+        echo '<div style="display: flex; justify-content: center;">';
+        echo '<div style="width: 80%;">';
+        echo '<h2 style="text-align: center; margin: 20px 0;">Multiple results found</h2>';
+        echo '<table style="margin: 0 auto; width: 80%; border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">';
         echo '<thead>';
         echo '<tr>';
         echo '<th>ID</th>';
@@ -73,8 +89,19 @@
             echo '<td>' . $result['birth'] . '</td>';
             echo '</tr>';
         }
+        echo '</tr>';
         echo '</tbody>';
         echo '</table>';
+
+        // CSS styles
+        echo '<style>';
+        echo 'thead th { background-color: #ddd; font-weight: bold; text-align: center; }';
+        echo 'tbody tr:nth-child(odd) { background-color: #f2f2f2; }';
+        echo 'table td, table th { padding: 8px; }';
+        echo 'table { border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }';
+        echo 'tbody tr:last-child td { border-bottom: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }';
+        echo '</style>';
+
     }
     ?>
 </body>
