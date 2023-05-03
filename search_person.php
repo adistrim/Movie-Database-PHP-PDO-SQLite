@@ -43,8 +43,8 @@
         $stmt->bindParam(':id', $input, PDO::PARAM_INT);
     } else { // Assume input is a name
         // Prepare SQL statement
-        $stmt = $db->prepare('SELECT * FROM people WHERE name LIKE :name');
-        $stmt->bindParam(':name', $input, PDO::PARAM_STR);
+        $stmt = $db->prepare('SELECT * FROM people WHERE name LIKE :surname');
+        $stmt->bindValue(':surname', "%$input", PDO::PARAM_STR);
     }
 
     // Execute SQL statement and retrieve results
@@ -59,16 +59,69 @@
     // Check number of results
     $num_results = count($results);
     if ($num_results == 0) { // No results found
-        echo '<p>No matches found.</p>';
+        echo '<h2 style="text-align: center; margin: 20px;">No matches found.</h2>';
         exit;
     } elseif ($num_results == 1) { // One result found
         foreach ($results as $result) {
             echo '<div class="result-box">';
-            echo '<h2>Name:' . $result['name'] . '</h2>';
+            echo '<h2>Name: ' . $result['name'] . '</h2>';
             echo '<h3>ID: ' . $result['id'] . '</p>';
             echo '<h3>Birth Year: ' . $result['birth'] . '</p>';
             echo '</div>';
         }
+        $stmt2 = $db->prepare('SELECT * FROM movies JOIN stars ON movies.id = stars.movie_id JOIN people ON stars.person_id = people.id WHERE people.id = :id OR people.name LIKE :surname');
+        if (is_numeric($input)) {
+            $stmt2->bindParam(':id', $input, PDO::PARAM_INT);
+        } else {
+            $stmt2->bindValue(':surname', "%$input", PDO::PARAM_STR);
+        }
+       
+        try {
+            $stmt2->execute();
+            $results2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo '<p>Error executing SQL statement: ' . $e->getMessage() . '</p>';
+            exit;
+        }
+
+        $num_results2 = count($results2);
+        echo '<div style="display: flex; justify-content: center;">';
+        if ($num_results2 == 0) {
+            echo '<h2 style="text-align: center; margin: 20px;">The Person has not starred in any movie.</h2>';
+        } else {
+            echo '<div style="display: flex; justify-content: center;">';
+            echo '<div style="width: 80%;">';
+            echo '<table style="margin: 0 auto; width: 80%; border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>Movie Name</th>';
+            echo '<th>Year</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            foreach ($results2 as $result) {
+                echo '<tr>';
+                echo '<td>' . $result['title'] . '</td>';
+                echo '<td>' . $result['year'] . '</td>';
+                echo '</tr>';
+            }
+            echo '</tr>';
+            echo '</tbody>';
+            echo '</table>';
+
+            // CSS styles
+            echo '<style>';
+            echo 'thead th { background-color: #ddd; font-weight: bold; text-align: center; }';
+            echo 'tbody tr:nth-child(odd) { background-color: #f2f2f2; }';
+            echo 'table td, table th { padding: 8px; }';
+            echo 'table { border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }';
+            echo 'tbody tr:last-child td { border-bottom: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }';
+            echo '</style>';
+            echo '</div>';
+        }
+        echo '</div>';
+
+
     } else { // Multiple results found
         echo '<div style="display: flex; justify-content: center;">';
         echo '<div style="width: 80%;">';
@@ -101,7 +154,6 @@
         echo 'table { border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }';
         echo 'tbody tr:last-child td { border-bottom: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }';
         echo '</style>';
-
     }
     ?>
 </body>
