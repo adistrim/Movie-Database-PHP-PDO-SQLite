@@ -85,7 +85,6 @@
         }
 
         $num_results2 = count($results2);
-        echo '<div style="display: flex; justify-content: center;">';
         if ($num_results2 == 0) {
             echo '<h2 style="text-align: center; margin: 20px;">The Person has not starred in any movie.</h2>';
         } else {
@@ -119,7 +118,6 @@
             echo '</style>';
             echo '</div>';
         }
-        echo '</div>';
 
 
     } else { // Multiple results found
