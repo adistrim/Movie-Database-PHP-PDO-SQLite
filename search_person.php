@@ -69,13 +69,10 @@
             echo '<h3>Birth Year: ' . $result['birth'] . '</p>';
             echo '</div>';
         }
-        $stmt2 = $db->prepare('SELECT * FROM movies JOIN stars ON movies.id = stars.movie_id JOIN people ON stars.person_id = people.id WHERE people.id = :id OR people.name LIKE :surname');
-        if (is_numeric($input)) {
-            $stmt2->bindParam(':id', $input, PDO::PARAM_INT);
-        } else {
-            $stmt2->bindValue(':surname', "%$input", PDO::PARAM_STR);
-        }
-       
+
+        $stmt2 = $db->prepare('SELECT year, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id WHERE s.person_id = :id GROUP BY year ORDER BY year DESC');
+        $stmt2->bindParam(':id', $input, PDO::PARAM_INT);
+
         try {
             $stmt2->execute();
             $results2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
@@ -88,20 +85,21 @@
         if ($num_results2 == 0) {
             echo '<h2 style="text-align: center; margin: 20px;">The Person has not starred in any movie.</h2>';
         } else {
-            echo '<div style="display: flex; justify-content: center;">';
-            echo '<div style="width: 80%;">';
+            // justify-content: center;
+            echo '<div style="display: flex;">';
+            echo '<div style="width: 50%;">';
             echo '<table style="margin: 0 auto; width: 80%; border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">';
             echo '<thead>';
             echo '<tr>';
-            echo '<th>Movie Name</th>';
             echo '<th>Year</th>';
+            echo '<th>Number of films</th>';
             echo '</tr>';
             echo '</thead>';
             echo '<tbody>';
             foreach ($results2 as $result) {
                 echo '<tr>';
-                echo '<td>' . $result['title'] . '</td>';
                 echo '<td>' . $result['year'] . '</td>';
+                echo '<td>' . $result['num_films'] . '</td>';
                 echo '</tr>';
             }
             echo '</tr>';
@@ -116,6 +114,44 @@
             echo 'table { border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }';
             echo 'tbody tr:last-child td { border-bottom: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }';
             echo '</style>';
+            echo '</div>';
+
+            $stmt3 = $db->prepare('SELECT m.title AS movie_title, p.name AS director_name, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id JOIN directors d ON m.id = d.movie_id JOIN people p ON d.person_id = p.id WHERE s.person_id = :id OR p.name LIKE :surname GROUP BY d.person_id, m.id ORDER BY num_films DESC');
+
+            if (is_numeric($input)) {
+                $stmt3->bindParam(':id', $input, PDO::PARAM_INT);
+            } else {
+                $stmt3->bindValue(':surname', "%$input", PDO::PARAM_STR);
+            }
+           
+            $stmt3->execute();
+            $results3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+
+            // Display table of directors and the number of films directed with the star
+            echo '<div style="display: flex;">';
+            echo '<div style="width: 100%;">';
+
+            echo '<table style="margin: 0 auto; width: 100%; border-collapse: collapse; border-radius: 5px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>Movie Name</th>';
+            echo '<th>Director</th>';
+            echo '<th>Number of Films</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            foreach ($results3 as $result) {
+                echo '<tr>';
+                echo '<td>' . $result['movie_title'] . '</td>';
+                echo '<td>' . $result['director_name'] . '</td>';
+                echo '<td>' . $result['num_films'] . '</td>';
+                echo '</tr>';
+            }
+            echo '</tr>';
+            echo '</tbody>';
+            echo '</table>';
+
+            echo '</div>';
             echo '</div>';
         }
 
