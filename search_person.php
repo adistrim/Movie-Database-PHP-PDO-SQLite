@@ -70,8 +70,22 @@
             echo '</div>';
         }
 
-        $stmt2 = $db->prepare('SELECT year, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id WHERE s.person_id = :id GROUP BY year ORDER BY year DESC');
-        $stmt2->bindParam(':id', $input, PDO::PARAM_INT);
+        $stmt2 = $db->prepare('SELECT m.year, COUNT(*) AS num_films 
+        FROM movies m 
+        JOIN stars s ON m.id = s.movie_id 
+        JOIN people p ON s.person_id = p.id 
+        WHERE (:id IS NOT NULL AND s.person_id = :id) OR (:name IS NOT NULL AND p.name LIKE :name)
+        GROUP BY m.year 
+        ORDER BY m.year DESC
+        ');
+
+        if (is_numeric($input)) {
+            $stmt2->bindParam(':id', $input, PDO::PARAM_INT);
+            $stmt2->bindValue(':name', null, PDO::PARAM_NULL); // set :name to NULL when using :id
+        } else {
+            $stmt2->bindValue(':id', null, PDO::PARAM_NULL); // set :id to NULL when using :name
+            $stmt2->bindValue(':name', "%$input%", PDO::PARAM_STR); // use wildcard search for names
+        }
 
         try {
             $stmt2->execute();
@@ -80,6 +94,7 @@
             echo '<p>Error executing SQL statement: ' . $e->getMessage() . '</p>';
             exit;
         }
+
 
         $num_results2 = count($results2);
         if ($num_results2 == 0) {
@@ -116,16 +131,28 @@
             echo '</style>';
             echo '</div>';
 
-            $stmt3 = $db->prepare('SELECT m.title AS movie_title, p.name AS director_name, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id JOIN directors d ON m.id = d.movie_id JOIN people p ON d.person_id = p.id WHERE s.person_id = :id OR p.name LIKE :surname GROUP BY d.person_id, m.id ORDER BY num_films DESC');
 
             if (is_numeric($input)) {
+                $stmt3 = $db->prepare('SELECT m.title AS movie_title, p.name AS director_name, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id JOIN directors d ON m.id = d.movie_id JOIN people p ON d.person_id = p.id WHERE s.person_id = :id GROUP BY m.title, p.name ORDER BY num_films DESC');
+                
                 $stmt3->bindParam(':id', $input, PDO::PARAM_INT);
             } else {
-                $stmt3->bindValue(':surname', "%$input", PDO::PARAM_STR);
+                $stmt3 = $db->prepare('SELECT m.title AS movie_title, p.name AS director_name, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id JOIN directors d ON m.id = d.movie_id JOIN people p ON d.person_id = p.id WHERE s.person_id = (SELECT id FROM people WHERE name = :surname) GROUP BY m.title, p.name ORDER BY num_films DESC');
+
+                $stmt3->bindParam(':surname', $input, PDO::PARAM_STR);
             }
-           
+
             $stmt3->execute();
             $results3 = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+            $num_results3 = count($results3);
+
+            if ($num_results3 == 0) {
+                echo '<h2 style="text-align: center; margin: 20px;">No Data found.</h2>';
+            }
+
 
             // Display table of directors and the number of films directed with the star
             echo '<div style="display: flex;">';
