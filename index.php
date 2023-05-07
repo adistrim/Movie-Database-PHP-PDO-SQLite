@@ -12,7 +12,7 @@
 		<h1 class="headline">Movies Database</h1>
 		<form action="search_person.php" method="get">
 			<label for="input">Search for a Person:</label>
-			<input type="text" id="input" name="input" placeholder="Enter an ID or Surname">
+			<input type="text" id="input" name="input" placeholder="Enter an ID or Name">
 			<button class="button" type="submit">Search</button>
 		</form>
 	</div>

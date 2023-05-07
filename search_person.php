@@ -43,8 +43,8 @@
         $stmt->bindParam(':id', $input, PDO::PARAM_INT);
     } else { // Assume input is a name
         // Prepare SQL statement
-        $stmt = $db->prepare('SELECT * FROM people WHERE name LIKE :surname');
-        $stmt->bindValue(':surname', "%$input", PDO::PARAM_STR);
+        $stmt = $db->prepare('SELECT * FROM people WHERE name LIKE :name');
+        $stmt->bindValue(':name', "%$input", PDO::PARAM_STR);
     }
 
     // Execute SQL statement and retrieve results
@@ -137,9 +137,9 @@
                 
                 $stmt3->bindParam(':id', $input, PDO::PARAM_INT);
             } else {
-                $stmt3 = $db->prepare('SELECT m.title AS movie_title, p.name AS director_name, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id JOIN directors d ON m.id = d.movie_id JOIN people p ON d.person_id = p.id WHERE s.person_id = (SELECT id FROM people WHERE name = :surname) GROUP BY m.title, p.name ORDER BY num_films DESC');
+                $stmt3 = $db->prepare('SELECT m.title AS movie_title, p.name AS director_name, COUNT(*) AS num_films FROM movies m JOIN stars s ON m.id = s.movie_id JOIN directors d ON m.id = d.movie_id JOIN people p ON d.person_id = p.id WHERE s.person_id = (SELECT id FROM people WHERE name = :name) GROUP BY m.title, p.name ORDER BY num_films DESC');
 
-                $stmt3->bindParam(':surname', $input, PDO::PARAM_STR);
+                $stmt3->bindParam(':name', $input, PDO::PARAM_STR);
             }
 
             $stmt3->execute();
